@@ -12,7 +12,7 @@
         <input type="file" id="f" />
         <input value="500" type="number" id="w" placeholder="宽" />
         <input value="500" type="number" id="h" placeholder="高" />
-        <button id="b">确定</button>
+        <button disabled="true" id="b">确定</button>
         <button id="b2">运行</button>
         <textarea
             placeholder="代码"
@@ -164,6 +164,9 @@
             b2.onclick = () => {
                 eval(t.value);
             };
+            t.onchange = () => {
+                b.disabled = false;
+            };
             b.onclick = () => {
                 i.width = +w.value;
                 i.height = +h.value;
@@ -177,6 +180,7 @@
                     else if (a1[i] != "\n") a1[i] = " ";
                 }
                 t.value = a1.join("") + "\n\n\n" + a2.join("");
+                b.disabled = true;
             };
         </script>
     </body>
