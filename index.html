@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>图片转 JavaScript 字符画</title>
+    </head>
+    <body>
+        <p>注意: 代码必须写分号</p>
+        上传图片
+        <input type="file" id="f" />
+        <button id="b">确定</button>
+        <button id="b2">运行</button>
+        <textarea placeholder="代码" id="t" style="width: 90vw"></textarea>
+        <img id="i" />
+        <script src="https://www.unpkg.com/jsfuck@0.4.0/jsfuck.js"></script>
+        <script type="module">
+            // === char-dust start ===
+            // https://www.npmjs.com/package/char-dust
+            // https://www.unpkg.com/char-dust@0.1.0/dist/index.mjs
+
+            /*
+                MIT License
+
+                Copyright (c) 2018 云游君 YunYouJun <me@yunyoujun.cn>
+
+                Permission is hereby granted, free of charge, to any person obtaining a copy
+                of this software and associated documentation files (the "Software"), to deal
+                in the Software without restriction, including without limitation the rights
+                to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+                copies of the Software, and to permit persons to whom the Software is
+                furnished to do so, subject to the following conditions:
+
+                The above copyright notice and this permission notice shall be included in all
+                copies or substantial portions of the Software.
+
+                THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+                IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+                FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+                AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+                LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+                OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+                SOFTWARE.
+            */
+
+            var __require = /* @__PURE__ */ (x =>
+                typeof require !== "undefined"
+                    ? require
+                    : typeof Proxy !== "undefined"
+                    ? new Proxy(x, {
+                          get: (a, b) =>
+                              (typeof require !== "undefined" ? require : a)[b],
+                      })
+                    : x)(function (x) {
+                if (typeof require !== "undefined")
+                    return require.apply(this, arguments);
+                throw new Error(
+                    'Dynamic require of "' + x + '" is not supported'
+                );
+            });
+
+            // src/core.ts
+            // import { TinyColor } from "@ctrl/tinycolor";
+            import { TinyColor } from "https://unpkg.com/@ctrl/tinycolor@3.4.0/dist/module/public_api.js";
+
+            // src/constant.ts
+            var FONT_WIDTH = 6;
+            var FONT_HEIGHT = 12;
+            var DEFAULT_AVAILABLE_CHARS = "@#&$%863!i1uazvno~;*^+-. ";
+
+            // src/core.ts
+            function grayToText(brightness, chars = DEFAULT_AVAILABLE_CHARS) {
+                const gap = 255 / chars.length;
+                let charIndex = Math.floor(brightness / gap);
+                if (charIndex >= chars.length) charIndex = chars.length - 1;
+                return chars[charIndex];
+            }
+            function imageToText(imageData, chars = DEFAULT_AVAILABLE_CHARS) {
+                const data = imageData.data;
+                const width = imageData.width;
+                const height = imageData.height;
+                const lines = [];
+                for (let h = 0; h < height; h += FONT_HEIGHT) {
+                    let line = "";
+                    for (let w = 0; w < width; w += FONT_WIDTH) {
+                        const i = (w + width * h) * 4;
+                        const color = new TinyColor({
+                            r: data[i],
+                            g: data[i + 1],
+                            b: data[i + 2],
+                        });
+                        line += grayToText(color.getBrightness(), chars);
+                    }
+                    lines.push(line);
+                }
+                return lines;
+            }
+
+            // src/utils.ts
+            function getImageData(image) {
+                let canvas;
+                if (document) {
+                    canvas = document.createElement("canvas");
+                } else if (__require("canvas")) {
+                    const { createCanvas } = __require("canvas");
+                    canvas = createCanvas(image.width, image.height);
+                } else {
+                    console.warn(
+                        "If you use it in Node.js without document, you need `npm install canvas`."
+                    );
+                    return;
+                }
+                const ctx = canvas.getContext("2d");
+                const ratio = image.width / image.naturalWidth;
+                canvas.width = image.width;
+                canvas.height = image.height;
+                ctx.scale(ratio, ratio);
+                ctx.drawImage(image, 0, 0);
+                const imageData = ctx.getImageData(
+                    0,
+                    0,
+                    image.width,
+                    image.height
+                );
+                return imageData;
+            }
+            // export {
+            //     DEFAULT_AVAILABLE_CHARS,
+            //     FONT_HEIGHT,
+            //     FONT_WIDTH,
+            //     getImageData,
+            //     grayToText,
+            //     imageToText,
+            // };
+
+            // ===/ char-dust end /===
+
+            /*
+                    DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+                                    Version 2, December 2004
+
+                Copyright (C) 2004 Sam Hocevar <sam@hocevar.net>
+
+                Everyone is permitted to copy and distribute verbatim or modified
+                copies of this license document, and changing it is allowed as long
+                as the name is changed.
+
+                            DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+                TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+
+                0. You just DO WHAT THE FUCK YOU WANT TO.
+            */
+
+            f.onchange = () => {
+                i.src = URL.createObjectURL(f.files[0]);
+            };
+            b2.onclick = () => {
+                eval(t.value);
+            };
+            b.onclick = () => {
+                const imageElement = i;
+                const imageData = getImageData(imageElement);
+                const text = imageToText(imageData, "@.");
+                var a1 = [...text.join("\n")],
+                    a2 = [...JSFuck.encode(t.value, true, true)];
+                for (let i = 0; i < a1.length; i++) {
+                    if (a1[i] == "@") a1[i] = a2.shift() || ";";
+                    else if (a1[i] != "\n") a1[i] = " ";
+                }
+                t.value = a1.join("") + "\n\n\n" + a2.join("");
+            };
+        </script>
+    </body>
+</html>
