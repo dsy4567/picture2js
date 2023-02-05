@@ -10,6 +10,8 @@
         <p>注意: 代码必须写分号</p>
         上传图片
         <input type="file" id="f" />
+        <input value="500" type="number" id="w" placeholder="宽" />
+        <input value="500" type="number" id="h" placeholder="高" />
         <button id="b">确定</button>
         <button id="b2">运行</button>
         <textarea placeholder="代码" id="t" style="width: 90vw"></textarea>
@@ -159,6 +161,8 @@
                 eval(t.value);
             };
             b.onclick = () => {
+                i.width = +w.value;
+                i.height = +h.value;
                 const imageElement = i;
                 const imageData = getImageData(imageElement);
                 const text = imageToText(imageData, "@.");
