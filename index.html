@@ -4,12 +4,34 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>图片转 JavaScript 字符画</title>
+        <style>
+            @media (prefers-color-scheme: dark) {
+                body {
+                    background: black !important;
+                    scrollbar-color: dark;
+                }
+                button,
+                textarea,
+                h1,
+                input,
+                span {
+                    filter: invert(1);
+                }
+                label {
+                    color: white;
+                }
+            }
+            body {
+                background: white;
+                color: black;
+            }
+        </style>
     </head>
     <body>
         <a href="https://github.com/dsy4567/picture2js">GitHub</a>
-        <p>注意: 代码必须写分号</p>
-        上传图片
-        <input type="file" id="f" />
+        <span>注意: 代码必须写分号 上传图片</span>
+        <input accept="image/*" type="file" id="f" />
+        <span>尺寸</span>
         <input value="500" type="number" id="w" placeholder="宽" />
         <input value="500" type="number" id="h" placeholder="高" />
         <button disabled="true" id="b">确定</button>
@@ -17,7 +39,7 @@
         <textarea
             placeholder="代码"
             id="t"
-            style="width: 90vw; height: 50vh"
+            style="width: 90vw; height: 50vh; overflow: auto"
         ></textarea>
         <img id="i" />
         <script src="https://www.unpkg.com/jsfuck@0.4.0/jsfuck.js"></script>
@@ -172,11 +194,17 @@
                 i.height = +h.value;
                 const imageElement = i;
                 const imageData = getImageData(imageElement);
-                const text = imageToText(imageData, "@.");
+                const text = imageToText(imageData, "@#&$.");
                 var a1 = [...text.join("\n")],
-                    a2 = [...JSFuck.encode(t.value, true, true)];
+                    a2 = [...JSFuck.encode(t.value, true, false)];
                 for (let i = 0; i < a1.length; i++) {
-                    if (a1[i] == "@") a1[i] = a2.shift() || ";";
+                    if (
+                        a1[i] == "@" ||
+                        a1[i] == "#" ||
+                        a1[i] == "&" ||
+                        a1[i] == "$"
+                    )
+                        a1[i] = a2.shift() || ";";
                     else if (a1[i] != "\n") a1[i] = " ";
                 }
                 t.value = a1.join("") + "\n\n\n" + a2.join("");
