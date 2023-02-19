@@ -28,12 +28,14 @@
         </style>
     </head>
     <body>
-        <a href="https://github.com/dsy4567/picture2js">GitHub</a>
-        <span>注意: 代码必须写分号 上传图片</span>
+        <h1>图片转 JavaScript 字符画</h1>
+        <a href="https://github.com/dsy4567/picture2js">View on GitHub</a>
+        <span>注意: 代码必须写分号, 请勿转换大量代码 上传图片</span>
         <input accept="image/*" type="file" id="f" />
         <span>尺寸</span>
         <input value="500" type="number" id="w" placeholder="宽" />
         <input value="500" type="number" id="h" placeholder="高" />
+        <input value="1" type="number" min="1" id="j" placeholder="精度" />
         <button disabled="true" id="b">确定</button>
         <button id="b2">运行</button>
         <textarea
@@ -194,7 +196,7 @@
                 i.height = +h.value;
                 const imageElement = i;
                 const imageData = getImageData(imageElement);
-                const text = imageToText(imageData, "@#&$.");
+                const text = imageToText(imageData, "@".repeat(+j.value) + ".");
                 var a1 = [...text.join("\n")],
                     a2 = [...JSFuck.encode(t.value, true, false)];
                 for (let i = 0; i < a1.length; i++) {
